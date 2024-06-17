@@ -140,16 +140,17 @@ router.get("/bulk", async (req, res) => {
 })
 
 router.get("/me",async(req,res)=>{
-    const {token} = req.body;
 
-    if(token ===""){
-        return res.status(401).json({
-            message:"user is not logged in",
-            success:false,
-        })
+    const authHeader = req.headers.authorization;
+    
+    if(!authHeader || !authHeader.startsWith('Bearer ')){
+        return res.status(403).json({
+            message:"User is not loged in"
+        });
     }
-    const userId = jwt.verify(token, JWT_SECRET);
-    const user = await User.findOne({ _id: userId });
+    const token = authHeader.split(' ')[1];
+    const userId = jwt.verify(token,JWT_SECRET);
+    const user = await User.findOne({ _id: userId.userId });
     if(!user){
         return res.status(401).json({
             message:"no user found",
