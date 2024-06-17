@@ -1,9 +1,9 @@
-const {JWT_SECRET} = require('./config');
+const JWT_SECRET = require('./config');
 const jwt = require('jsonwebtoken');
 
 const authMiddleware =(req,res,next)=>{
     const authHeader = req.headers.authorization;
-
+    
     if(!authHeader || !authHeader.startsWith('Bearer ')){
         return res.status(403).json({});
     }
@@ -15,11 +15,15 @@ const authMiddleware =(req,res,next)=>{
         next();
         }
         else {
-            return res.status(403).json({})
+            return res.status(403).json({
+                message:"invalid token"
+            })
         }
     }catch (err){
 
-        return res.status(401).json({});
+        return res.status(401).json({
+            message:"something went wrong while authentication"
+        });
 
     }
 }

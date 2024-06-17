@@ -139,4 +139,28 @@ router.get("/bulk", async (req, res) => {
     })
 })
 
+router.get("/me",async(req,res)=>{
+    const {token} = req.body;
+
+    if(token ===""){
+        return res.status(401).json({
+            message:"user is not logged in",
+            success:false,
+        })
+    }
+    const userId = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ _id: userId });
+    if(!user){
+        return res.status(401).json({
+            message:"no user found",
+            success:false,
+        })
+    }
+    res.status(200).json({
+        username:user.username,
+        firstName:user.firstName,
+        lastName:user.lastName
+    })
+})
+
 module.exports = router;
