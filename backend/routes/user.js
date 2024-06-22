@@ -97,36 +97,58 @@ const updateBody = zod.object({
     lastName: zod.string().optional(),
 })
 
-router.put("/", authMiddleware, async (req, res) => {
+router.put("/update", authMiddleware, async (req, res) => {
     const { success } = updateBody.safeParse(req.body)
     if (!success) {
         res.status(411).json({
-            message: "Error while updating information"
+            message: "Error while updating information",
+            success:false
         })
     }
 
-    await User.updateOne(req.body, {
-        id: req.userId
+    await User.updateOne( {
+        _id: req.userId
+    },{
+        firstName:req.body.firstName,
+        lastName:req.body.lastName,
+        password:req.body.password
     })
 
     res.json({
-        message: "Updated successfully"
+        message: "Updated successfully",
+        success:true
     })
 })
 
 router.get("/bulk", async (req, res) => {
     const filter = req.query.filter || "";
+    const authHeader = req.headers.authorization;
+    
+    if(!authHeader || !authHeader.startsWith('Bearer ')){
+        return res.status(403).json({
+            message:"User is not loged in"
+        });
+    }
+    const token = authHeader.split(' ')[1];
+    const userId = jwt.verify(token,JWT_SECRET);
 
     const users = await User.find({
-        $or: [{
-            firstName: {
-                "$regex": filter
+        $and :[
+            {
+                _id:{ $ne:userId.userId}
+            },
+            {
+                $or: [{
+                    firstName: {
+                        "$regex": filter
+                    }
+                }, {
+                    lastName: {
+                        "$regex": filter
+                    }
+                }]
             }
-        }, {
-            lastName: {
-                "$regex": filter
-            }
-        }]
+        ]
     })
 
     res.json({
