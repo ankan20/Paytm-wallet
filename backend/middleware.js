@@ -4,8 +4,13 @@ const jwt = require('jsonwebtoken');
 const authMiddleware =(req,res,next)=>{
     const authHeader = req.headers.authorization;
     
-    if(!authHeader || !authHeader.startsWith('Bearer ')){
-        return res.status(403).json({});
+    
+    if(!authHeader || !authHeader.startsWith('Bearer ') || !authHeader.split(' ')[1]===null){
+        
+        return res.status(403).json({
+            success:false,
+            message:"authHeader not found ,user need to signup"
+        });
     }
     const token = authHeader.split(' ')[1];
     try{

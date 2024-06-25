@@ -13,9 +13,9 @@ const Profile = React.memo(() => {
     <>
     
       {
-        isEdite ? (
+        isEdite ? ( <ProfileSection setIsEdite={setIsEdite}/>) : (
           <ProfileEditeForm setIsEdite={setIsEdite}/>
-        ) :( <ProfileSection setIsEdite={setIsEdite}/>)
+        ) 
       }
     
     </>
@@ -35,6 +35,9 @@ function ProfileSection ({setIsEdite}){
       headers: {
           Authorization: "Bearer " + localStorage.getItem("token")
       }});
+      if(!response.data.success){
+        navigate("/signup");
+      }
   setFirstName(response.data.firstName);
   setLastName(response.data.lastName);
   setUsername(response.data.username);

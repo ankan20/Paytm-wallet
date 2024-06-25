@@ -124,8 +124,9 @@ router.get("/bulk", async (req, res) => {
     const filter = req.query.filter || "";
     const authHeader = req.headers.authorization;
     
-    if(!authHeader || !authHeader.startsWith('Bearer ')){
+    if(!authHeader || !authHeader.startsWith('Bearer ')|| !authHeader.split(' ')[1]===null){
         return res.status(403).json({
+            success:false,
             message:"User is not loged in"
         });
     }
@@ -165,8 +166,10 @@ router.get("/me",async(req,res)=>{
 
     const authHeader = req.headers.authorization;
     
-    if(!authHeader || !authHeader.startsWith('Bearer ')){
+    
+    if(!authHeader || !authHeader.startsWith('Bearer ') || authHeader.split(' ')[1]){
         return res.status(403).json({
+            success:false,
             message:"User is not loged in"
         });
     }
