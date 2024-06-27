@@ -1,6 +1,6 @@
 const express = require('express');
 const { authMiddleware } = require('../middleware');
-const { Account } = require('../db');
+const { Account, Transaction, User } = require('../db');
 const { default: mongoose } = require('mongoose');
 
 const router = express.Router();
@@ -46,6 +46,12 @@ router.post("/transfer", authMiddleware, async (req, res) => {
         });
     }
 
+    await Transaction.create({
+        senderId:req.userId,
+        receiverId:to,
+        amount:amount
+    });
+
     // Perform the transfer
     //await Account.updateOne({ userId: req.userId }, { $inc: { balance: -amount } }).session(session);
     //await Account.updateOne({ userId: to }, { $inc: { balance: amount } }).session(session);
@@ -59,5 +65,19 @@ router.post("/transfer", authMiddleware, async (req, res) => {
         success:true,
     });
 });
+
+router.get("/history",authMiddleware,async (req,res)=>{
+    const history = await Transaction.find({
+        $or:[
+            {senderId:req.userId},
+            {receiverId:req.userId}
+        ]
+    }).populate("receiverId").populate("senderId");
+    const user = await User.findById({_id:req.userId});
+    return res.status(200).json({
+        history,
+        user
+    })
+})
 
 module.exports = router;

@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import NotFound from "./pages/NotFound";
+import History from "./pages/History";
 const App = () => {
   return (
     <>
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/profile" element={<ProtectedRoute component = {<Profile />}/>} />
           <Route path="/dashboard" element={<ProtectedRoute component ={<Dashboard />}/>} />
           <Route path="/send" element={<ProtectedRoute component ={<SendMoney />}/>} />
+          <Route path="/history" element={<ProtectedRoute component ={<History />}/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
