@@ -12,6 +12,8 @@ export const Appbar = memo(() => {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }});
+            
+            
         setFirstName(response.data.firstName);
         setAvatar(response.data.firstName[0].toUpperCase());
     }

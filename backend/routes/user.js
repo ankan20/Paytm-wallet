@@ -8,17 +8,18 @@ const JWT_SECRET  = require("../config");
 const  { authMiddleware } = require("../middleware");
 
 const signupBody = zod.object({
-    username: zod.string().email(),
-	firstName: zod.string(),
-	lastName: zod.string(),
-	password: zod.string()
+    username: zod.string().min(1,{message:"username is required"}).email(),
+	firstName: zod.string().min(1,{message:"firstname is required"}),
+	lastName: zod.string().min(1,{message:"lastname is required"}),
+	password: zod.string().min(6,{message:"password is required"})
 })
 
 router.post("/signup", async (req, res) => {
-    const { success } = signupBody.safeParse(req.body)
+    const { success ,error} = signupBody.safeParse(req.body)
+    
     if (!success) {
         return res.status(411).json({
-            message: "Email already taken / Incorrect inputs"
+            errorMessage:error.issues
         })
     }
 
@@ -65,7 +66,8 @@ router.post("/signin", async (req, res) => {
     const { success } = signinBody.safeParse(req.body)
     if (!success) {
         return res.status(411).json({
-            message: "Email already taken / Incorrect inputs"
+            message: "Incorrect inputs",
+            success:false,
         })
     }
 
@@ -124,8 +126,8 @@ router.get("/bulk", async (req, res) => {
     const filter = req.query.filter || "";
     const authHeader = req.headers.authorization;
     
-    if(!authHeader || !authHeader.startsWith('Bearer ')|| !authHeader.split(' ')[1]===null){
-        return res.status(403).json({
+    if(!authHeader || !authHeader.startsWith('Bearer ')|| (authHeader.split(' ')[1]=="")){
+        return res.json({
             success:false,
             message:"User is not loged in"
         });
@@ -166,9 +168,9 @@ router.get("/me",async(req,res)=>{
 
     const authHeader = req.headers.authorization;
     
-    
-    if(!authHeader || !authHeader.startsWith('Bearer ') || authHeader.split(' ')[1]){
-        return res.status(403).json({
+    if(!authHeader || !authHeader.startsWith('Bearer ') || (authHeader.split(' ')[1]=="")){
+        
+        return res.status(200).json({
             success:false,
             message:"User is not loged in"
         });
@@ -177,7 +179,9 @@ router.get("/me",async(req,res)=>{
     const userId = jwt.verify(token,JWT_SECRET);
     const user = await User.findOne({ _id: userId.userId });
     if(!user){
-        return res.status(401).json({
+        
+        return res.status(200).json({
+            
             message:"no user found",
             success:false,
         })

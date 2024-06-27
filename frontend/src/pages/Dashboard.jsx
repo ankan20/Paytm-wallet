@@ -3,9 +3,11 @@ import {Appbar} from '../components/Appbar'
 import {Balance} from '../components/Balance'
 import {Users} from '../components/Users'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
   const [balance,setBalance] = useState("");
+  const navigate = useNavigate();
  const getAmount = async()=>{
   const response = await axios.get("http://localhost:3000/api/v1/account/balance", {
     headers: {

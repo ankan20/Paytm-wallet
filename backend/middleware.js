@@ -5,9 +5,9 @@ const authMiddleware =(req,res,next)=>{
     const authHeader = req.headers.authorization;
     
     
-    if(!authHeader || !authHeader.startsWith('Bearer ') || !authHeader.split(' ')[1]===null){
+    if(!authHeader || !authHeader.startsWith('Bearer ') || (authHeader.split(' ')[1]=="")){
         
-        return res.status(403).json({
+        return res.status(200).json({
             success:false,
             message:"authHeader not found ,user need to signup"
         });

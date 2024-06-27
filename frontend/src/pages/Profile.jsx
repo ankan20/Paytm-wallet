@@ -35,9 +35,8 @@ function ProfileSection ({setIsEdite}){
       headers: {
           Authorization: "Bearer " + localStorage.getItem("token")
       }});
-      if(!response.data.success){
-        navigate("/signup");
-      }
+      
+      
   setFirstName(response.data.firstName);
   setLastName(response.data.lastName);
   setUsername(response.data.username);
@@ -45,6 +44,7 @@ function ProfileSection ({setIsEdite}){
     headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
     }});
+   
     setAmount(Math.floor(res.data.balance))
   }
   getInfo();
