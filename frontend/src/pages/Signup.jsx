@@ -16,8 +16,8 @@ const Signup = () => {
   const [errors,setErrors] = useState({});
   const navigate = useNavigate()
 
-  const onClick = async(e)=>{
-    e.preventDefault();
+  const onClick = async()=>{
+    
     try {
       const response = await axios.post("http://localhost:3000/api/v1/user/signup",{
         username,
@@ -30,7 +30,7 @@ const Signup = () => {
 
     }
     catch (error){
-      console.log("Error : ",error.response.data.errorMessage)
+      
       setErrors(error.response.data.errorMessage.reduce((acc, error) => {
         if (error.path && error.path.length > 0) {
           const field = error.path[0];

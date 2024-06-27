@@ -5,6 +5,7 @@ import { InputBox } from '../components/InputBox';
 import Heading from '../components/Heading';
 import SubHeading from '../components/SubHeading';
 import axios from 'axios';
+import ErrorMessage from '../components/ErrorMessage';
 
 const Profile = React.memo(() => {
   
@@ -72,14 +73,21 @@ function ProfileEditeForm ({setIsEdite}){
   const [firstName,setFirstName]=useState("");
   const [lastName,setLastName]=useState("");
   const [password,setPassword] = useState("");
+  const [errors,setErrors]=useState({});
   useEffect( ()=>{
     async function getData (){
-      const response = await axios.get("http://localhost:3000/api/v1/user/me", {
-        headers: {
-            Authorization: "Bearer " + localStorage.getItem("token")
-        }});
-        setFirstName(response.data.firstName);
-        setLastName(response.data.lastName);
+      try{
+        const response = await axios.get("http://localhost:3000/api/v1/user/me", {
+          headers: {
+              Authorization: "Bearer " + localStorage.getItem("token")
+          }});
+          setFirstName(response.data.firstName);
+          setLastName(response.data.lastName);
+      }
+      catch (error){
+       console.log("Error : geting details of user ",error);
+      }
+      
     }
     getData();
    
@@ -91,6 +99,7 @@ function ProfileEditeForm ({setIsEdite}){
 
   const onSubmit = async()=>{
     
+   try{
     const response = await axios.put("http://localhost:3000/api/v1/user/update",{
       firstName,
       lastName,
@@ -101,6 +110,18 @@ function ProfileEditeForm ({setIsEdite}){
       }});
       if(response.data.success){
         setIsEdite(prev=>!prev);
+      }
+   }
+
+      catch(error){
+        console.log(error)
+        setErrors(error.response.data.errorMessage.reduce((acc, error) => {
+          if (error.path && error.path.length > 0) {
+            const field = error.path[0];
+            acc[field] = error.message;
+          }
+          return acc;
+        }, {}));
       }
   }
 
@@ -124,6 +145,7 @@ function ProfileEditeForm ({setIsEdite}){
           label={"First Name"}
           value={firstName}
         />
+        {errors.firstName && <ErrorMessage  message={errors.firstName}/> }
         <InputBox
           onChange={(e) => {
             setLastName(e.target.value);
@@ -131,7 +153,7 @@ function ProfileEditeForm ({setIsEdite}){
           label={"Last Name"}
           value={lastName}
         />
-        
+        {errors.lastName && <ErrorMessage  message={errors.lastName}/> }
         <InputBox
           onChange={(e) => {
             setPassword(e.target.value);
@@ -139,6 +161,7 @@ function ProfileEditeForm ({setIsEdite}){
           label={"Password"}
           placeholder={"add your new password"}
         />
+        {errors.password && <ErrorMessage  message={errors.password}/> }
         <div className="mt-2 w-full">
           <Button  label={"Submit"} onClick={onSubmit}/>
           <Button  label={"Cancel"} onClick={onCancel}/>

@@ -15,7 +15,7 @@ export const SendMoney = () => {
         setFlashMessage({ message, type });
         setTimeout(() => {
             setFlashMessage(null);
-        }, 3000); // Auto dismiss after 3 seconds
+        }, 2000); // Auto dismiss after 3 seconds
     };
 
     return (
@@ -48,10 +48,15 @@ export const SendMoney = () => {
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     id="amount"
                                     placeholder="Enter amount"
+                                    value={amount}
                                 />
                             </div>
                             <button onClick={async () => {
                                 try {
+                                    if(amount<=0){
+                                        handleFlashMessage("send atleast 1 rupees", "error");
+                                        return;
+                                    }
                                     const response = await axios.post("http://localhost:3000/api/v1/account/transfer", {
                                         to: id,
                                         amount
@@ -61,6 +66,7 @@ export const SendMoney = () => {
                                         }
                                     });
                                     
+                                    setAmount(0)
                                     if (response.data.success) {
                                         handleFlashMessage("Transaction successful", "success");
                                         setTimeout(() => {
@@ -73,9 +79,9 @@ export const SendMoney = () => {
 
                                     
                                 } catch (error) {
-                                    //console.error("Error during transaction:", error);
                                     
-                                    handleFlashMessage("Error during transaction", "error");
+                                    setAmount(0)
+                                    handleFlashMessage(error.response.data.message, "error");
                                 }
                             }} className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
                                 Initiate Transfer

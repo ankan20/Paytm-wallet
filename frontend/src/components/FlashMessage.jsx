@@ -7,7 +7,7 @@ const FlashMessage = ({ message, type, onClose }) => {
         const timer = setTimeout(() => {
             setVisible(false);
             onClose();
-        }, 3000); // Auto dismiss after 3 seconds
+        }, 2000); // Auto dismiss after 3 seconds
 
         return () => clearTimeout(timer);
     }, [onClose]);
@@ -16,10 +16,11 @@ const FlashMessage = ({ message, type, onClose }) => {
         setVisible(false);
         onClose();
     };
+    let color = type ==="error" ? "red" : "green";
 
     return (
         <div
-            className={`fixed top-0 left-0 right-0 p-4 bg-${type === 'error' ? 'red' : 'green'}-500   text-white z-50 ${
+            className={`fixed top-0 left-0 right-0 p-4 bg-${color}-500 ${color=="red" && "bg-red-500"}  text-white z-50 ${
                 visible ? 'translate-y-0' : '-translate-y-full'
             } transition-transform duration-500 ease-in-out`}
         >

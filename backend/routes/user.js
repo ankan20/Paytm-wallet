@@ -58,16 +58,16 @@ router.post("/signup", async (req, res) => {
 
 
 const signinBody = zod.object({
-    username: zod.string().email(),
-	password: zod.string()
+    username: zod.string().min(1,{message:"username is required"}).email(),
+	password: zod.string().min(6,{message:"password must have atleast 6 charetor"})
 })
 
 router.post("/signin", async (req, res) => {
-    const { success } = signinBody.safeParse(req.body)
+    const { success ,error} = signinBody.safeParse(req.body)
+    
     if (!success) {
         return res.status(411).json({
-            message: "Incorrect inputs",
-            success:false,
+            errorMessage:error.issues
         })
     }
 
@@ -89,22 +89,21 @@ router.post("/signin", async (req, res) => {
 
     
     res.status(411).json({
-        message: "Error while logging in"
+        errorMessage: "Error while logging in"
     })
 })
 
 const updateBody = zod.object({
-	password: zod.string().optional(),
-    firstName: zod.string().optional(),
-    lastName: zod.string().optional(),
+	password: zod.string().min(6,{message:"password must have atleast 6 charetor"}),
+    firstName: zod.string().min(1,{message:"firstname is required"}).optional(),
+    lastName: zod.string().min(1,{message:"lastname is required"}).optional(),
 })
 
 router.put("/update", authMiddleware, async (req, res) => {
-    const { success } = updateBody.safeParse(req.body)
+    const { success ,error} = updateBody.safeParse(req.body);
     if (!success) {
-        res.status(411).json({
-            message: "Error while updating information",
-            success:false
+        return res.status(411).json({
+            errorMessage:error.issues 
         })
     }
 
